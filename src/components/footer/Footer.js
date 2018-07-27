@@ -42,7 +42,7 @@ class Footer extends Component {
     {isEnd ? "" : <a href="#" onClick={this.togglePause}>{text}</a>}
     {isEnd ? "" : <a href="#" onClick={this.skip}>跳过动画--></a>}
     <span>
-      <a href="https://github.com/JesseZhao1990/">
+      <a href="https://github.com/JesseZhao1990/resume">
       <svg className={styles.icon} 
       width="26" height="28" viewBox="0 0 16 16" version="1.1" aria-hidden="true">
       <path
