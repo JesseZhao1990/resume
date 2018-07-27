@@ -28,7 +28,6 @@ class App extends Component {
     })
 
     eventBus.on('togglePause', (state)=>{
-      console.log(state);
       this.setState({
         paused: state === 1 ? true : false
       })

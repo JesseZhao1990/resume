@@ -5,7 +5,7 @@
  */
 
  #work-text {
-  max-height: 94.5%;
+  max-height: 94.5vh;
 }
 
 #work-text.flipped {

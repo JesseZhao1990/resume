@@ -3,14 +3,10 @@ import ReactDom from 'react-dom';
 import Promise from 'bluebird';
 import MarkDown from 'markdown';
 import wheel from 'mouse-wheel'
-import workText from './work.txt';
+import workText from '../../config/work.txt';
+import cfg from '../../config/cfg';
 
-import {handleChar} from "../../common/utils";
-import eventBus from '../../common/eventBus';
-
-const endOfSentence = /[？！。~：]$/
-const comma = /\D[，；、]$/
-const endOfBlock = /[^/]\n\n$/
+import {writeTo} from "../../common/utils";
 
 const toHTML = MarkDown.markdown.toHTML;
 
@@ -18,7 +14,7 @@ class WorkText extends Component{
   constructor(props){
     super(props);
     this.state={
-      speed: 16,
+      speed: cfg.speed,
       flipped: false,
       preview: true,
       show: false,
@@ -33,61 +29,7 @@ class WorkText extends Component{
     this.setState({show:true})
     let dom = ReactDom.findDOMNode(this);
     let {workText,speed} = this.state;
-    await this.writeTo(dom, workText, 0, speed, false, 1);
-  }
-
-  async writeTo( el, message, index, interval, mirrorToStyle, charsPerInterval){
-    let chars = message.slice(index,index+charsPerInterval)
-    index += charsPerInterval
-    el.scrollTop = el.scrollHeight;
-
-    if(mirrorToStyle){
-      this.writeChar(chars);
-    }else{
-      this.writeSimpleChar(chars);
-    }
-
-    if(index < message.length){
-      let thisInterval = interval;
-      let thisSlice = message.slice(index-2,index);
-      if(comma.test(thisSlice)){
-        thisInterval = interval * 30;
-      }
-
-      if(endOfSentence.test(thisSlice)){
-        thisInterval = interval * 70;
-      }
-
-      thisSlice = message.slice(index-2,index+1);
-      if(endOfBlock.test(thisSlice)){
-        thisInterval = interval * 50;
-      }
-
-      do {
-        await Promise.delay(thisInterval)
-      } while( this.props.paused )
-
-      return this.writeTo(el, message, index, interval, mirrorToStyle, charsPerInterval)
-
-    }
-
-  }
-
-  writeChar(char){
-    const {styleBuffer,text} = this.state;
-    let newChar =  handleChar(text,char);
-    let newStyleBuffer = styleBuffer + char;
-    
-    this.setState({
-      text:newChar,
-      styleBuffer:newStyleBuffer
-    })
-    if(char === ";"){
-      eventBus.emit('styleAppend', this.state.styleBuffer);
-      this.setState({
-        styleBuffer:''
-      })
-    }
+    await writeTo(dom, workText, 0, speed, false, 1,this);
   }
 
   showWorkBox(){
@@ -117,12 +59,6 @@ class WorkText extends Component{
         dom.scrollTop += (dy * (this.flipped ? -1 : 1));
 
       }.bind(this), true)
-    })
-  }
-
-  writeSimpleChar(char){
-    this.setState({
-      text:`${this.state.text}${char}`
     })
   }
 
